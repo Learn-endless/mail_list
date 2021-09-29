@@ -8,7 +8,6 @@ void InitContact(struct Contact* pc)
 	pc->sz = 0;  //归零，表示通讯录里没有人
 	pc->Data = (struct PeoInfo*)malloc(CONTACT_MAX * sizeof(struct PeoInfo));
 	pc->ContactMax = CONTACT_MAX;  //最开始的最大容量
-
 }
 
 //添加联系人信息
@@ -19,7 +18,8 @@ void AddPeople(struct Contact* pc)
 	if (pc->sz == pc->ContactMax)
 	{
 		//增容
-		struct PeoInfo* ret = realloc(pc->Data, (pc->ContactMax + 2) * sizeof(struct PeoInfo));
+		struct PeoInfo* ret = realloc(pc->Data,             //内存增容函数
+			(pc->ContactMax + 2) * sizeof(struct PeoInfo));
 		if (ret == NULL)
 		{
 			printf("增容失败！\n");
@@ -46,7 +46,6 @@ void AddPeople(struct Contact* pc)
 	pc->Data[pc->sz] = temp;      //把这个人的信息真正存放到通讯录中
 	pc->sz++;                     //总人数加1
 	printf("添加成功!\n");
-
 }
 
 //删除联系人信息
