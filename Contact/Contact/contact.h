@@ -60,3 +60,12 @@ void ClsContact(struct Contact* pc);
 
 //销毁通讯录
 void FreeContact(struct Contact* pc);
+
+//写入联系人的信息到文件中去
+void SveContact(struct Contact* pc);  
+
+//加载通讯录信息
+void LoadContact(struct Contact* pc);
+
+//增容函数
+void CapacityContact(struct Contact* pc);

@@ -42,8 +42,9 @@ int main()
 		switch (input)
 		{
 		case EXIT:
+			SveContact(&con);   //写入联系人的信息到文件中去
 			FreeContact(&con);  //释放空间
-			printf("销毁通讯录！\n");
+			printf("退出通讯录！\n");
 			break;
 		case ADD:               //添加联系人
 			AddPeople(&con);

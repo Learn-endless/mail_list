@@ -2,19 +2,9 @@
 
 #include"contact.h"
 
-//初始化通讯录
-void InitContact(struct Contact* pc)
+//增容函数
+void CapacityContact(struct Contact* pc)
 {
-	pc->sz = 0;  //归零，表示通讯录里没有人
-	pc->Data = (struct PeoInfo*)malloc(CONTACT_MAX * sizeof(struct PeoInfo));
-	pc->ContactMax = CONTACT_MAX;  //最开始的最大容量
-}
-
-//添加联系人信息
-void AddPeople(struct Contact* pc)
-{
-	struct PeoInfo temp = { 0 };     //用来临时存放单个人的信息
-
 	if (pc->sz == pc->ContactMax)
 	{
 		//增容
@@ -23,7 +13,7 @@ void AddPeople(struct Contact* pc)
 		if (ret == NULL)
 		{
 			printf("增容失败！\n");
-			return;
+			exit(1);   //增容失败，直接结束程序
 		}
 		else
 		{
@@ -32,6 +22,50 @@ void AddPeople(struct Contact* pc)
 			printf("增容成功！\n");
 		}
 	}
+}
+
+//加载通讯录信息
+void LoadContact(struct Contact* pc)
+{
+	//打开文件
+	FILE* w = fopen("contact.txt", "rb");
+	if (NULL == w)
+	{
+		perror("LoadContact::fopen");
+
+		return;
+	}
+	//读文件
+	struct PeoInfo temp = { 0 };
+	while (fread(&temp, sizeof(struct PeoInfo), 1, w))
+	{
+		CapacityContact(pc);
+		pc->Data[pc->sz] = temp;
+		pc->sz++;
+	}
+
+	//关闭文件
+	fclose(w);
+	w = NULL;
+}
+
+//初始化通讯录
+void InitContact(struct Contact* pc)
+{
+	pc->sz = 0;  //归零，表示通讯录里没有人
+	pc->Data = (struct PeoInfo*)malloc(CONTACT_MAX * sizeof(struct PeoInfo));
+	pc->ContactMax = CONTACT_MAX;  //最开始的最大容量
+
+	LoadContact(pc);  //加载通讯录信息
+}
+
+//添加联系人信息
+void AddPeople(struct Contact* pc)
+{
+	struct PeoInfo temp = { 0 };     //用来临时存放单个人的信息
+
+	CapacityContact(pc);
+
 	printf("请输入姓名：");
 	scanf("%s", temp.name);
 	printf("请输入性别：");
@@ -213,16 +247,38 @@ void ClsContact(struct Contact* pc)
 	else
 	{
 		//直接初始化通讯录
-		InitContact(pc);
+		pc->sz = 0;  //归零，表示通讯录里没有人
+		pc->ContactMax = CONTACT_MAX;  //最开始的最大容量
 		printf("清除成功！\n");
 	}
 }
 
-//销毁通讯录
+//释放通讯录
 void FreeContact(struct Contact* pc)
 {
 	free(pc->Data);
 	pc->Data = NULL;   //释放之后，要置为空指针
 	pc->ContactMax = 0;
 	pc->sz = 0;
+}
+
+//写入联系人的信息到文件中去
+void SveContact(struct Contact* pc)
+{
+	//打开文件
+	FILE* w = fopen("contact.txt", "wb");
+	if (NULL == w)
+	{
+		perror("SveContact::fopen");
+		return;
+	}
+	//写文件
+	int i = 0; 
+	for (i = 0; i < pc->sz; i++)
+	{
+		fwrite(pc->Data + i, sizeof(struct PeoInfo), 1, w);
+	}
+	//关闭文件
+	fclose(w);
+	w = NULL;
 }
